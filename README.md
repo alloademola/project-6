@@ -1,6 +1,8 @@
 # project-6
 WEB SOLUTION WITH WORDPRESS
+
 Project 6 consists of two parts:
+
 
 1: Configure storage subsystem for Web and Database servers based on Linux OS. The focus of this part is to give you practical experience of working with disks, partitions and volumes in Linux.
 
@@ -157,4 +159,37 @@ so now, we are going to use. lvcreate utility to create 2 logical volumes.
 apps-lv (Use half of the PV size), and logs-lv Use the remaining space of the PV size. 
 NOTE: apps-lv will be used to store data for the Website while, logs-lv will be used to store data for logs.
 
-so we are going to use. 
+so we are going to use this commmand below
+ 
+ sudo lvcreate -n apps-lv -L 14G vg-webdata
+ 
+<img width="793" alt="Screenshot 2023-01-30 at 10 30 09" src="https://user-images.githubusercontent.com/118350020/215439554-510a67a2-94a3-4330-a992-5d6ec464fe6e.png">
+
+ sudo lvcreate -n logs-lv -L 14G vg-webdata
+ 
+ <img width="662" alt="Screenshot 2023-01-30 at 10 35 20" src="https://user-images.githubusercontent.com/118350020/215440588-7cdecfd8-254b-4fa9-bbe0-052cf3de3c84.png">
+ 
+ to verify that our Logical Volume has been created successfully we  are going to run
+ 
+ sudo lvs
+ 
+ <img width="719" alt="Screenshot 2023-01-30 at 10 46 25" src="https://user-images.githubusercontent.com/118350020/215443369-31103d87-d371-4160-9324-7c8ff42d1478.png"> 
+ 
+ now we are going to Verify the entire setup, so we are using the below command
+ 
+ sudo lvs, sudo vgs and sudo pvs 
+ 
+ <img width="657" alt="Screenshot 2023-01-30 at 10 59 44" src="https://user-images.githubusercontent.com/118350020/215573300-ad22de29-2973-4891-ae8b-28441018bae2.png">
+ 
+ The next thing to do now is to Use mkfs.ext4 to format the logical volumes with ext4 filesystem
+ so we are going to run the command below
+ 
+ sudo mkfs.ext4 /dev/vg-webdata/apps-lv 
+ 
+ <img width="622" alt="Screenshot 2023-01-30 at 20 26 48" src="https://user-images.githubusercontent.com/118350020/215576126-8e241e50-a0e4-47a9-a50d-1f405b1c3019.png">
+
+this for the first one, so we are going to use the below command to create for logs-lv
+ 
+ sudo mkfs.ext4 /dev/vg-webdata/logs-lv
+ 
+ <img width="650" alt="Screenshot 2023-01-30 at 20 31 08" src="https://user-images.githubusercontent.com/118350020/215577187-16489b29-2e1b-411f-a7af-f91e0244d784.png">
