@@ -193,3 +193,89 @@ this for the first one, so we are going to use the below command to create for l
  sudo mkfs.ext4 /dev/vg-webdata/logs-lv
  
  <img width="650" alt="Screenshot 2023-01-30 at 20 31 08" src="https://user-images.githubusercontent.com/118350020/215577187-16489b29-2e1b-411f-a7af-f91e0244d784.png">
+
+ 15 :  the next step is to Create /var/www/html directory to store website files
+so we are going to use this command
+
+ sudo mkdir -p /var/www/html
+ 
+ <img width="610" alt="Screenshot 2023-01-30 at 21 13 53" src="https://user-images.githubusercontent.com/118350020/215585329-802f33a5-d821-45d7-b90d-61e3e0403329.png"> 
+
+ 
+ so we are going to Create /home/recovery/logs to store backup of log data, we are running this command below
+ 
+ sudo mkdir -p /home/recovery/logs
+ 
+ so we are going to mounting point now, we are to Mount /var/www/html on apps-lv logical volume 
+ 
+ and we are going to use the below command
+ 
+ sudo mount /dev/vg-webdata/apps-lv /var/www/html
+ 
+ <img width="682" alt="Screenshot 2023-01-30 at 21 27 33" src="https://user-images.githubusercontent.com/118350020/215587851-07e03e1a-af5d-4442-b7be-8828b45ecd25.png">
+
+ from the diagram above,we can see it is mounted
+ 
+ 
+ to confirmed if my /log is not empty,  we are going to use this command below to run that
+ 
+ sudo ls -l /var/log 
+
+ <img width="667" alt="Screenshot 2023-01-30 at 21 35 33" src="https://user-images.githubusercontent.com/118350020/215589349-e82e2344-9943-4efd-a743-f35f7aa4445d.png">
+
+ 
+ what next is to Use rsync utility to backup all the files in the log directory /var/log into /home/recovery/logs (This is required before mounting the file system)
+ 
+ so we are to run this command below
+ 
+ sudo rsync -av /var/log/. /home/recovery/logs/
+ 
+<img width="670" alt="Screenshot 2023-01-30 at 21 42 09" src="https://user-images.githubusercontent.com/118350020/215590548-e73945f9-fe38-45dc-81d4-eb81ec8aebd6.png">
+
+as you can see from the above diagram, it works fine
+ 
+so we can go ahead and Mount /var/log on logs-lv logical volume. 
+Please Note that ,all the existing data on /var/log will be deleted. That is why step 15 above is very
+important
+ 
+ so we are going to use this below command to get that done
+ 
+ sudo mount /dev/vg-webdata/logs-lv /var/log 
+ 
+ <img width="670" alt="Screenshot 2023-01-30 at 21 57 10" src="https://user-images.githubusercontent.com/118350020/215593396-69623b9d-1bd7-43d6-9a4b-490de2aecadb.png"> 
+ 
+ as you can see from the diagram above,there such folder is lost or not found
+ 
+ so its very important that we Restore log files back into /var/log directory 
+ so we are going to run the below command now
+ 
+ sudo rsync -av /home/recovery/logs/ /var/log
+ 
+ <img width="648" alt="Screenshot 2023-01-30 at 22 02 28" src="https://user-images.githubusercontent.com/118350020/215594270-d2942dd3-e5f5-4e42-9c64-c5b115ec9bb9.png">
+
+ from the diagram above, we can see that we have copy it back to the directory, but let us run this command to be sure
+ 
+ sudo ls -l /var/log
+ 
+ <img width="597" alt="Screenshot 2023-01-30 at 22 05 46" src="https://user-images.githubusercontent.com/118350020/215595402-8f90225f-83e3-4df1-8330-2781e3dd59ae.png"> 
+ 
+ the diagram shows it as being copied back
+ 
+ so now, we need to Update /etc/fstab file so that the mount configuration will persist after restart of the server.
+ 
+ so we are to run this command below to check the block ID
+ 
+ sudo blkid
+ 
+ <img width="661" alt="Screenshot 2023-01-30 at 22 17 10" src="https://user-images.githubusercontent.com/118350020/215597321-3dec3685-ba71-4e4c-b6f5-28561d70ec11.png"> 
+ 
+ what next is to run this command below
+ 
+ sudo vi /etc/fstab
+ 
+ <img width="1040" alt="Screenshot 2023-01-30 at 22 38 33" src="https://user-images.githubusercontent.com/118350020/215601386-74cbeb99-3683-4c10-84ed-d18b03b083f6.png">
+
+ so now, we need to Update /etc/fstab file so that the mount configuration will persist after restart of the server.
+ 
+ 
+ 
