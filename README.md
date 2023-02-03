@@ -279,3 +279,169 @@ important
  
  
  
+ 
+ 
+ 
+ 
+ 
+ Step 2 — Prepare the Database Server
+
+ And Launch a second RedHat EC2 instance that will have a role – ‘DB Server’
+Repeat the same steps as for the Web Server, but instead of apps-lv create db-lv and mount it to /db directory instead of /var/www/html/.
+
+ first just run this command below
+ 
+ lsblk
+ 
+ <img width="952" alt="Screenshot 2023-01-31 at 23 17 36" src="https://user-images.githubusercontent.com/118350020/215896520-af1e5589-5e83-4341-91c8-f8be44a95c64.png"> 
+ 
+ so we are going to run this command below again
+ 
+ sudo gdisk /dev/xvdf
+ 
+ <img width="939" alt="Screenshot 2023-01-31 at 23 24 49" src="https://user-images.githubusercontent.com/118350020/215897699-ba41cde7-726f-4d1a-a5bf-81fc38b80334.png"> 
+ 
+ <img width="980" alt="Screenshot 2023-01-31 at 23 27 28" src="https://user-images.githubusercontent.com/118350020/215898139-18a67498-0086-4f8e-9f9e-8f5a3ee11a65.png">
+ 
+ we are going to repeat the same step for the remaining xvdg and xvdh
+ 
+ <img width="972" alt="Screenshot 2023-01-31 at 23 33 04" src="https://user-images.githubusercontent.com/118350020/215899329-ac353b96-a38d-4660-97f6-5267b154ae96.png">
+ 
+<img width="978" alt="Screenshot 2023-01-31 at 23 36 55" src="https://user-images.githubusercontent.com/118350020/215899550-14954430-7805-4235-ba23-d7f333a288b3.png">
+ 
+ so we need to check if what we just did now is correct.
+ so we are going to run this command below
+ lsblk
+ 
+ <img width="978" alt="Screenshot 2023-01-31 at 23 41 06" src="https://user-images.githubusercontent.com/118350020/215900448-b9bb357b-c4a0-44f1-84ea-b59fd26f0067.png">
+ as you can see from the diagram ,our configuration is correct
+The next thing now, is to install lvm2, so we are going to run the command below
+ 
+ sudo yum install lvm2 -y
+ 
+ <img width="985" alt="Screenshot 2023-01-31 at 23 54 51" src="https://user-images.githubusercontent.com/118350020/215902542-94f2c133-1fc7-4a4e-b35d-2a2583d8fb18.png">
+ 
+ <img width="983" alt="Screenshot 2023-01-31 at 23 55 47" src="https://user-images.githubusercontent.com/118350020/215902716-6ec16987-cd41-400f-9d8b-50c4cbd483e8.png"> 
+  so am going to run the below cammand now
+ 
+ sudo pvcreate /dev/xvdf1 /dev/xvdg1 /dev/xvdh1  
+ 
+ <img width="984" alt="Screenshot 2023-02-01 at 00 02 48" src="https://user-images.githubusercontent.com/118350020/215903811-09926c9c-8613-4e7d-a688-77033b5d30b8.png">
+ 
+ next am going to run this command below again
+ 
+ sudo vgcreate database-vg /dev/xvdh1 /dev/xvdg1 /dev/xvdf1 
+ 
+ <img width="979" alt="Screenshot 2023-02-01 at 00 23 19" src="https://user-images.githubusercontent.com/118350020/215906695-8bbaa2b0-bc6a-4f36-b2f4-bbd90e9083da.png">
+ 
+ To. confirmed what we just created, let us run the command below
+ 
+ sudo vgs
+ 
+ <img width="977" alt="Screenshot 2023-02-01 at 00 25 42" src="https://user-images.githubusercontent.com/118350020/215907150-0110af85-e5bc-4ea8-9d0a-d350b7b63fcc.png">
+ so now , let us created our logical volume, so we are going to create our db-lv only 
+ 
+ we are using the command below and this is the only logical volume we are to created 
+ 
+ sudo lvcreate -n db-lv -L 20G database-vg 
+ 
+ <img width="984" alt="Screenshot 2023-02-01 at 00 36 02" src="https://user-images.githubusercontent.com/118350020/215908230-b3e8ae23-40e2-4130-8674-bcf6d788991e.png"> 
+ 
+ so to confirmed what we just did on that diagram above, we are going to run the command below
+ 
+ sudo lvs
+ 
+ <img width="979" alt="Screenshot 2023-02-01 at 00 39 33" src="https://user-images.githubusercontent.com/118350020/215908673-9d165aaa-3374-4137-bb9e-2e53d6366915.png"> 
+ 
+So the next step is to create the mount point
+ so we are going to run this command below
+ 
+ sudo mkdir /db 
+ sudo mkfs.ext4 /dev/database-vg/db-lv
+ 
+ <img width="980" alt="Screenshot 2023-02-01 at 00 53 38" src="https://user-images.githubusercontent.com/118350020/215910490-bb9efc03-6fcf-4134-a8a0-f9b53fe84c25.png"> 
+ sudo mkfs.ext4 /dev/database-vg/db-lv
+ 
+ our disgram above shows that, we are doing the right thing
+ 
+ so now we are going to mount
+ we are going to use the command below
+ 
+ sudo mount /dev/database-vg/db-lv /db 
+ 
+ <img width="972" alt="Screenshot 2023-02-01 at 01 00 12" src="https://user-images.githubusercontent.com/118350020/215911835-8fe140d3-1137-4374-866d-401e1d61400b.png">
+ 
+ from the diagram above, its shows that, it as being mounted
+ 
+ one last step, we need to put it into fstab
+ 
+ so lets run this command below
+ 
+ sudo blkid 
+ 
+ <img width="1122" alt="Screenshot 2023-02-01 at 01 03 20" src="https://user-images.githubusercontent.com/118350020/215912312-ee885bd3-9e8d-455c-b71f-a7188f8af9a3.png">
+ 
+ so now let us run this command
+ 
+sudo vi /etc/fstab
+ 
+<img width="1122" alt="Screenshot 2023-02-01 at 01 08 31" src="https://user-images.githubusercontent.com/118350020/215912846-94ae34c3-7abb-41a7-a641-27ef611fa51c.png">
+ so we are going to write this UUID i copy from the blikd inside it
+ 
+ UUID=3d3aaaf4-6fec-4137-abf2-88f9d02f17d8 /db ext4 defaults 0 0 
+ 
+ <img width="1117" alt="Screenshot 2023-02-01 at 01 26 01" src="https://user-images.githubusercontent.com/118350020/215914910-9da5b4e8-810c-43c8-9edf-9319be87c136.png"> 
+ 
+ 
+ 
+ 
+ Step 3 — we are going to Install WordPress on our Web Server EC2
+and Update the repository using the below commands to get that done
+ 
+
+sudo yum -y update
+ 
+ so after the update we need to
+
+Install wget, Apache and it’s dependencies using the below commands. 
+
+sudo yum -y install wget httpd php php-mysqlnd php-fpm php-json
+ 
+ once we get that done, the next step is to start our Apache
+ 
+ 
+
+Start Apache
+
+sudo systemctl enable httpd
+ 
+ <img width="1118" alt="Screenshot 2023-02-01 at 01 35 12" src="https://user-images.githubusercontent.com/118350020/215915908-95f65bf0-ffcd-4579-b78e-4eaa39644f5e.png">
+ 
+ the next thing is to restart the webserver using the below commands
+ 
+sudo systemctl start httpd
+ 
+ next stage is to install PHP and it’s depemdencies using all this commands below
+ 
+sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+
+ <img width="1119" alt="Screenshot 2023-02-01 at 01 39 34" src="https://user-images.githubusercontent.com/118350020/215916791-177da099-8891-470a-b77e-1ca145d73821.png"> 
+ 
+sudo yum install yum-utils http://rpms.remirepo.net/enterprise/remi-release-8.rpm
+
+ 
+ 
+sudo yum module list php
+sudo yum module reset php
+sudo yum module enable php:remi-7.4
+sudo yum install php php-opcache php-gd php-curl php-mysqlnd
+sudo systemctl start php-fpm
+sudo systemctl enable php-fpm
+sudo setsebool -P httpd_execmem 1 
+ 
+ <img width="1440" alt="Screenshot 2023-02-03 at 05 45 42" src="https://user-images.githubusercontent.com/118350020/216514686-1e3f2d83-b196-4269-a6e3-955fb95a3e6a.png">
+ <img width="1440" alt="Screenshot 2023-02-03 at 05 47 48" src="https://user-images.githubusercontent.com/118350020/216514873-5b14d7e0-9943-4dda-8da3-603a0bbdc367.png">
+ 
+ from the diagram above, it shows that our php and apache is installed and working fine
+ 
+ 
