@@ -263,23 +263,43 @@ important
  
  so now, we need to Update /etc/fstab file so that the mount configuration will persist after restart of the server.
  
- so we are to run this command below to check the block ID
+ so we are to run this command below to check the block ID and that is what am going to use to populate the fstab
  
  sudo blkid
  
- <img width="661" alt="Screenshot 2023-01-30 at 22 17 10" src="https://user-images.githubusercontent.com/118350020/215597321-3dec3685-ba71-4e4c-b6f5-28561d70ec11.png"> 
  
- what next is to run this command below
+ <img width="1060" alt="Screenshot 2023-02-03 at 10 37 09" src="https://user-images.githubusercontent.com/118350020/216566646-65d73c7d-0454-4f51-aca3-7cba016e0919.png">
+ as you can see from the above diagram, we have the block ID, so we can easliy copy out the ext4 file, for apps and logs
+ 
+ /dev/mapper/webdata--vg-apps--lv: UUID="a9632105-647a-4cf4-95da-e060ef873763" TYPE="ext4"
+
+/dev/mapper/webdata--vg-logs--lv: UUID="47f62323-a9ca-4349-a6a4-7fcef017c08e" TYPE="ext4"
+ 
+ so am going to run this command below
  
  sudo vi /etc/fstab
+  
+ <img width="1063" alt="Screenshot 2023-02-03 at 10 49 49" src="https://user-images.githubusercontent.com/118350020/216568736-a520a3fc-04b0-48de-aaa1-e066960cf628.png">
  
- <img width="1040" alt="Screenshot 2023-01-30 at 22 38 33" src="https://user-images.githubusercontent.com/118350020/215601386-74cbeb99-3683-4c10-84ed-d18b03b083f6.png">
-
- so now, we need to Update /etc/fstab file so that the mount configuration will persist after restart of the server.
+ so am going to copied and paste the blockid inside it as shown below in the diagram
  
+ <img width="1066" alt="Screenshot 2023-02-03 at 11 02 35" src="https://user-images.githubusercontent.com/118350020/216571900-5ad554c1-6c28-4f59-bc8c-7dc51ac0bca7.png"> 
  
+so am going to run this commad below to mount i, and if it returns error, it means what we have done is wrong 
+ sudo mount -a
  
+ <img width="1063" alt="Screenshot 2023-02-03 at 11 10 51" src="https://user-images.githubusercontent.com/118350020/216573392-bd2be2b1-c794-4b87-ad61-6f393284c086.png">
  
+ as you can see from the above diagram, it works.
+ so we need to restart it with this command
+ 
+ sudo systemctl daemon-reload
+ 
+ <img width="1105" alt="Screenshot 2023-02-03 at 11 17 10" src="https://user-images.githubusercontent.com/118350020/216574924-98697e5c-92e3-45be-a985-48833295101f.png">
+ 
+ so we have uupdated the fstab as we can see from the diagram above.
+ 
+ so let us progress to the next stage
  
  
  
@@ -315,20 +335,22 @@ Repeat the same steps as for the Web Server, but instead of apps-lv create db-lv
  
  <img width="978" alt="Screenshot 2023-01-31 at 23 41 06" src="https://user-images.githubusercontent.com/118350020/215900448-b9bb357b-c4a0-44f1-84ea-b59fd26f0067.png">
  as you can see from the diagram ,our configuration is correct
-The next thing now, is to install lvm2, so we are going to run the command below
+
+ The next thing now, is to install lvm2, so we are going to run the command below
  
  sudo yum install lvm2 -y
  
  <img width="985" alt="Screenshot 2023-01-31 at 23 54 51" src="https://user-images.githubusercontent.com/118350020/215902542-94f2c133-1fc7-4a4e-b35d-2a2583d8fb18.png">
  
  <img width="983" alt="Screenshot 2023-01-31 at 23 55 47" src="https://user-images.githubusercontent.com/118350020/215902716-6ec16987-cd41-400f-9d8b-50c4cbd483e8.png"> 
-  so am going to run the below cammand now
+  
+ so am going to run the below cammand now.
  
  sudo pvcreate /dev/xvdf1 /dev/xvdg1 /dev/xvdh1  
  
  <img width="984" alt="Screenshot 2023-02-01 at 00 02 48" src="https://user-images.githubusercontent.com/118350020/215903811-09926c9c-8613-4e7d-a688-77033b5d30b8.png">
  
- next am going to run this command below again
+ next, am going to run this command below again.
  
  sudo vgcreate database-vg /dev/xvdh1 /dev/xvdg1 /dev/xvdf1 
  
@@ -339,6 +361,7 @@ The next thing now, is to install lvm2, so we are going to run the command below
  sudo vgs
  
  <img width="977" alt="Screenshot 2023-02-01 at 00 25 42" src="https://user-images.githubusercontent.com/118350020/215907150-0110af85-e5bc-4ea8-9d0a-d350b7b63fcc.png">
+ 
  so now , let us created our logical volume, so we are going to create our db-lv only 
  
  we are using the command below and this is the only logical volume we are to created 
@@ -353,18 +376,21 @@ The next thing now, is to install lvm2, so we are going to run the command below
  
  <img width="979" alt="Screenshot 2023-02-01 at 00 39 33" src="https://user-images.githubusercontent.com/118350020/215908673-9d165aaa-3374-4137-bb9e-2e53d6366915.png"> 
  
-So the next step is to create the mount point
- so we are going to run this command below
+So the next step is to create the mount point.
+ 
+so we are going to run this command below
  
  sudo mkdir /db 
  sudo mkfs.ext4 /dev/database-vg/db-lv
  
  <img width="980" alt="Screenshot 2023-02-01 at 00 53 38" src="https://user-images.githubusercontent.com/118350020/215910490-bb9efc03-6fcf-4134-a8a0-f9b53fe84c25.png"> 
- sudo mkfs.ext4 /dev/database-vg/db-lv
+ 
+
  
  our disgram above shows that, we are doing the right thing
  
- so now we are going to mount
+ so now we are going to mount,
+ 
  we are going to use the command below
  
  sudo mount /dev/database-vg/db-lv /db 
@@ -379,23 +405,42 @@ So the next step is to create the mount point
  
  sudo blkid 
  
- <img width="1122" alt="Screenshot 2023-02-01 at 01 03 20" src="https://user-images.githubusercontent.com/118350020/215912312-ee885bd3-9e8d-455c-b71f-a7188f8af9a3.png">
+ <img width="1063" alt="Screenshot 2023-02-03 at 11 57 21" src="https://user-images.githubusercontent.com/118350020/216586729-7feb5c9c-238a-4745-8871-c72221db8103.png">
  
  so now let us run this command
  
 sudo vi /etc/fstab
  
-<img width="1122" alt="Screenshot 2023-02-01 at 01 08 31" src="https://user-images.githubusercontent.com/118350020/215912846-94ae34c3-7abb-41a7-a641-27ef611fa51c.png">
+<img width="1062" alt="Screenshot 2023-02-03 at 12 00 57" src="https://user-images.githubusercontent.com/118350020/216587426-9b433a34-3c08-4eaf-a703-fe1fba22406b.png">
+ 
+ 
  so we are going to write this UUID i copy from the blikd inside it
  
- UUID=3d3aaaf4-6fec-4137-abf2-88f9d02f17d8 /db ext4 defaults 0 0 
+UUID=ed07a0b5-36c2-480f-b831-20b1e447791c /db ext4 defaults 0 0 
  
- <img width="1117" alt="Screenshot 2023-02-01 at 01 26 01" src="https://user-images.githubusercontent.com/118350020/215914910-9da5b4e8-810c-43c8-9edf-9319be87c136.png"> 
+ <img width="1058" alt="Screenshot 2023-02-03 at 12 07 16" src="https://user-images.githubusercontent.com/118350020/216589069-646ff51d-694b-46d1-b551-448fe5bdc826.png"> 
+ 
+ so we have to run this command now
+ sudo mount -a and if it returns no error, it shows we are good
+ 
+ <img width="1061" alt="Screenshot 2023-02-03 at 12 23 28" src="https://user-images.githubusercontent.com/118350020/216592123-edd4bd99-9481-41ea-954c-b85996e70702.png">
+ 
+ so as shown above, it returns no error,
+ so we are to restart it now with this command below
+ 
+ sudo systemctl daemon-reload
+ 
+So now let us Verify our setup by running df -h, output must look like what is in the diagram below
+ 
+ 
+ <img width="1059" alt="Screenshot 2023-02-03 at 12 30 05" src="https://user-images.githubusercontent.com/118350020/216592827-c3d474ad-6ffe-482f-a66f-c7b89f9735d0.png">
  
  
  
  
- Step 3 — we are going to Install WordPress on our Web Server EC2
+ Step 3 — 
+ 
+ we are to Install WordPress on our Web Server EC2
 and Update the repository using the below commands to get that done
  
 
@@ -407,41 +452,239 @@ Install wget, Apache and it’s dependencies using the below commands.
 
 sudo yum -y install wget httpd php php-mysqlnd php-fpm php-json
  
- once we get that done, the next step is to start our Apache
+ <img width="1058" alt="Screenshot 2023-02-03 at 13 06 08" src="https://user-images.githubusercontent.com/118350020/216600107-19fbb226-6327-4e34-83d0-1163b495e837.png">
  
+ <img width="1066" alt="Screenshot 2023-02-03 at 13 04 59" src="https://user-images.githubusercontent.com/118350020/216600190-6b2309ed-4254-47e3-bd67-44fcbf536311.png">
  
-
-Start Apache
-
-sudo systemctl enable httpd
+  
+next step is to install To install PHP and it’s depemdencies 
  
- <img width="1118" alt="Screenshot 2023-02-01 at 01 35 12" src="https://user-images.githubusercontent.com/118350020/215915908-95f65bf0-ffcd-4579-b78e-4eaa39644f5e.png">
- 
- the next thing is to restart the webserver using the below commands
- 
-sudo systemctl start httpd
- 
- next stage is to install PHP and it’s depemdencies using all this commands below
+ so we need to run all this command below
  
 sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-
- <img width="1119" alt="Screenshot 2023-02-01 at 01 39 34" src="https://user-images.githubusercontent.com/118350020/215916791-177da099-8891-470a-b77e-1ca145d73821.png"> 
- 
 sudo yum install yum-utils http://rpms.remirepo.net/enterprise/remi-release-8.rpm
-
- 
- 
 sudo yum module list php
 sudo yum module reset php
 sudo yum module enable php:remi-7.4
 sudo yum install php php-opcache php-gd php-curl php-mysqlnd
 sudo systemctl start php-fpm
 sudo systemctl enable php-fpm
-sudo setsebool -P httpd_execmem 1 
  
- <img width="1440" alt="Screenshot 2023-02-03 at 05 45 42" src="https://user-images.githubusercontent.com/118350020/216514686-1e3f2d83-b196-4269-a6e3-955fb95a3e6a.png">
- <img width="1440" alt="Screenshot 2023-02-03 at 05 47 48" src="https://user-images.githubusercontent.com/118350020/216514873-5b14d7e0-9943-4dda-8da3-603a0bbdc367.png">
+ lets check if the php is active, so we are going to run this command
  
- from the diagram above, it shows that our php and apache is installed and working fine
+ sudo systemctl status php-fpm 
+ 
+ <img width="1053" alt="Screenshot 2023-02-03 at 13 26 25" src="https://user-images.githubusercontent.com/118350020/216603548-a27602ee-0427-4b39-83fb-f39a50a73b41.png">
+
+ 
+ so to instruct SeLinux to allow Apache to execuute the PHP code via PHP-FPM to run
+ we need to run this command 
+ 
+ sudo setsebool -P httpd_execmem 1
+  after this is done ,  we need to restart the Restart Apache using the below cammand
+ But before that, let us check the status 
+ 
+ let us run this command
+ sudo systemctl status httpd
+ 
+ <img width="1046" alt="Screenshot 2023-02-03 at 14 03 31" src="https://user-images.githubusercontent.com/118350020/216610438-11938f3f-1560-4029-9855-b5c31180ff54.png">
+ 
+ now lets get the public IP and run it on the browser to see if the Apache will work
+ 
+ <img width="1440" alt="Screenshot 2023-02-03 at 14 08 54" src="https://user-images.githubusercontent.com/118350020/216611360-3e432738-4d7e-48e6-a271-09687d59d372.png">
+ 
+ <img width="1440" alt="Screenshot 2023-02-03 at 14 09 06" src="https://user-images.githubusercontent.com/118350020/216611405-28ca9c9e-6132-4317-ba4f-662134cbf2dd.png">
+ 
+ as shown in the above diagram, it means that the Apache is working on fine
+ 
+ 
+ The next step now is to Download wordpress and copy wordpress to var/www/html
+ 
+ we are going to run this command below
+ 
+  mkdir wordpress
+  cd   wordpress
+  sudo wget http://wordpress.org/latest.tar.gz
+ 
+<img width="1109" alt="Screenshot 2023-02-03 at 14 18 01" src="https://user-images.githubusercontent.com/118350020/216613485-61c1965d-64f9-4f70-a542-ed3b17ac5e6f.png">
+  so let us run this command below to check for the latest tar
+ 
+ ls -l
+ 
+ <img width="1104" alt="Screenshot 2023-02-03 at 14 24 53" src="https://user-images.githubusercontent.com/118350020/216614563-96c1a972-f4e6-4e67-9a74-1e78bc825b13.png">
+ 
+ so we have the latest, now let us extract it,we are going to use the below command
+ 
+ sudo tar xzvf latest.tar.gz
+ 
+ <img width="1063" alt="Screenshot 2023-02-03 at 14 27 45" src="https://user-images.githubusercontent.com/118350020/216615292-413fde8e-e7c6-4846-8d7b-bb5bcd23ca47.png">
+ 
+ <img width="1058" alt="Screenshot 2023-02-03 at 14 28 22" src="https://user-images.githubusercontent.com/118350020/216615373-98b67623-c91a-4314-a85d-8afb46579b32.png">
+ 
+ as you can see from the diagram above, it as being extracted
+ so another folder have being created called wordpress as you can see from the below diagram 
+ 
+ <img width="1066" alt="Screenshot 2023-02-03 at 14 31 26" src="https://user-images.githubusercontent.com/118350020/216615890-8a15c414-eba6-42d1-8ea3-73145f2e06d0.png">
+ 
+ so am going to change direction into that wordpress, using this command
+ 
+ cd wordpress
+ 
+ <img width="1054" alt="Screenshot 2023-02-03 at 14 33 41" src="https://user-images.githubusercontent.com/118350020/216616288-f442e0a0-bebb-4294-8886-b30ed1f9eb34.png"> 
+ 
+ am going to run a command now to copy from one folder to another using the below command
+ 
+ sudo cp -R wp-config-sample.php wp-config.php
+ 
+ <img width="999" alt="Screenshot 2023-02-03 at 14 46 23" src="https://user-images.githubusercontent.com/118350020/216618833-cd7f37e4-073c-48ab-9d44-67868c8a9bd5.png">
+ 
+ dont forget, am inside wordpress, wordpress inside wordpress, as show in the diagram below
+ 
+ <img width="999" alt="Screenshot 2023-02-03 at 14 48 59" src="https://user-images.githubusercontent.com/118350020/216619570-682b60bd-43a2-4821-8013-7496200a89ce.png"> 
+ so i will just run this command now 
+
+ cd..
+ ls
+ 
+ <img width="991" alt="Screenshot 2023-02-03 at 14 52 07" src="https://user-images.githubusercontent.com/118350020/216620091-99774c29-90f8-4268-a03a-f2c627930a99.png">
+ 
+ so i will run this command below to copy the content from the wordpress
+ 
+sudo cp -R wordpress/ /var/www/html/ 
+cd /var/www/html/ 
+ 
+ <img width="978" alt="Screenshot 2023-02-03 at 15 02 42" src="https://user-images.githubusercontent.com/118350020/216623079-53537e51-7eb6-413d-8225-cd6b220599a3.png"> 
+ 
+ cd ../..
+ 
+ <img width="995" alt="Screenshot 2023-02-03 at 15 12 06" src="https://user-images.githubusercontent.com/118350020/216624998-3ac5d503-3648-43c0-bc3a-303ba4e11487.png"> 
+ 
+ so will run this command below
+ ls -l wordpress
+ 
+ <img width="995" alt="Screenshot 2023-02-03 at 15 12 06" src="https://user-images.githubusercontent.com/118350020/216625870-674f9e7a-6df0-439d-8f4d-9d4d506aa4e8.png">
+ 
+ sudo cp -R wordpress/.  /var/www/html/
+ to see if it works, i will run the below command as well
+ 
+ sudo ls -l /var/www/html
+ 
+<img width="1001" alt="Screenshot 2023-02-03 at 15 24 12" src="https://user-images.githubusercontent.com/118350020/216627540-4f10374b-da91-49b5-b133-49cf42d84b60.png">
+ 
+ wow, it works fine
+ 
+so lets change directory 
+ cd /var/www/html
+ 
+ <img width="998" alt="Screenshot 2023-02-03 at 15 36 14" src="https://user-images.githubusercontent.com/118350020/216630232-41b90eda-536b-4e07-912e-1704c480e234.png">
+ 
+ dont forget that our webserver will be
+ acting as a client, so we also need to install mysql inside it as well
+ 
+ so we are to run this command now
+ 
+ sudo yum install mysql-server 
+ 
+ <img width="1003" alt="Screenshot 2023-02-03 at 15 48 08" src="https://user-images.githubusercontent.com/118350020/216633223-de2d66f0-8f79-41e3-9953-634eda35af07.png">
+ 
+ <img width="997" alt="Screenshot 2023-02-03 at 15 48 50" src="https://user-images.githubusercontent.com/118350020/216633275-a005572b-eb6b-41c5-a278-4a622b680e71.png">
+ 
+ so we need to keep our webserver running, so we just have to start it with this command below
+ 
+ sudo systemctl start mysqld 
+ sudo systemctl enable mysqld 
+ sudo systemctl status mysqld 
+ 
+ <img width="998" alt="Screenshot 2023-02-03 at 15 55 05" src="https://user-images.githubusercontent.com/118350020/216634530-e44e8569-071e-4520-9438-1e5f8fb17cdd.png">
+ its all working fine as you can see from the above diagram, its operational 
+ 
+ 
+ Next Step now is to 
+ 
+ Install MySQL on our DB Server EC2 
+ 
+ so we are to run this command now
+ 
+ sudo yum install mysql-server -y
+ 
+ <img width="1002" alt="Screenshot 2023-02-03 at 16 01 34" src="https://user-images.githubusercontent.com/118350020/216636196-7b0bdd10-267c-4bab-96f9-8bf6cbb12961.png"> 
+ 
+ <img width="995" alt="Screenshot 2023-02-03 at 16 02 34" src="https://user-images.githubusercontent.com/118350020/216636374-fb3f65c5-f28a-46c8-8af6-79fa2d642991.png">
+
+ now let us run this command below to make the server run
+ 
+ sudo systemctl start mysqld
+ sudo systemctl enable mysqld 
+ sudo systemctl status mysqld  
+ 
+ <img width="989" alt="Screenshot 2023-02-03 at 16 07 27" src="https://user-images.githubusercontent.com/118350020/216637492-6b7a66be-14ad-4b44-b6d7-36383ec65eba.png">
+ 
+ from the diagram above, our server is running
+ 
+ so now lets run this command below
+ 
+ sudo mysql_secure_installation 
+ 
+ <img width="1004" alt="Screenshot 2023-02-03 at 16 11 35" src="https://user-images.githubusercontent.com/118350020/216638372-7c2242fd-eea4-40e0-8942-eb0f2ae32823.png"> 
+from the Diagram above, we are just going to say n
+ and i will just give a simple password
+ 
+ so just continue to type yes till the end, as shown in the diagram below
+ 
+ <img width="999" alt="Screenshot 2023-02-03 at 16 16 28" src="https://user-images.githubusercontent.com/118350020/216639488-e54e7687-0b2c-463b-ad3a-8a608755a80d.png">
+ 
+ let us run this command sudo mysql -u root -p
+ 
+ <img width="998" alt="Screenshot 2023-02-03 at 16 19 30" src="https://user-images.githubusercontent.com/118350020/216640176-e5ba56f4-5300-4306-a727-bed510a92383.png">
+ 
+ now input the password you set while installing the mysql as you can see below from the diagram
+ 
+ <img width="992" alt="Screenshot 2023-02-03 at 16 20 01" src="https://user-images.githubusercontent.com/118350020/216640406-8cd1cbaa-f06a-4dfa-9820-ef9799c29c32.png"> 
+  so now let us create our database using the below code
+ 
+ create database wordpress;
+ 
+ <img width="1010" alt="Screenshot 2023-02-03 at 16 25 35" src="https://user-images.githubusercontent.com/118350020/216641485-c1fa8841-5632-4688-9214-8a648bb890e5.png">
+ 
+ so if i enter show databases; it should give us whats inside the below diagram
+ <img width="1440" alt="Screenshot 2023-02-03 at 16 29 44" src="https://user-images.githubusercontent.com/118350020/216642472-916b55b1-6a3d-47ee-9fb0-0efa2034f483.png">
+ 
+ <img width="796" alt="Screenshot 2023-02-03 at 16 49 50" src="https://user-images.githubusercontent.com/118350020/216647178-2db95554-56cc-497c-a0c2-6b24b5c6749d.png"> 
+ 
+ next is to FLUSH PRIVILEGES; and 
+SHOW DATABASES;
+exit
+ 
+ <img width="1000" alt="Screenshot 2023-02-03 at 16 56 05" src="https://user-images.githubusercontent.com/118350020/216648536-997f297d-567d-4aed-8ab2-835db779327a.png">
+ 
+ we also need to set the bind address to, so we are to run this command below
+
+sudo vi /etc/my.cnf 
+ 
+ <img width="999" alt="Screenshot 2023-02-03 at 17 00 31" src="https://user-images.githubusercontent.com/118350020/216649502-6bbde376-d0d9-44be-a008-f970b4c5116d.png">
+ 
+ so we are going to input this code below
+[mysqld]
+bind-address=0.0.0.0 as shown in the diagram below
+ 
+ <img width="1440" alt="Screenshot 2023-02-03 at 17 05 22" src="https://user-images.githubusercontent.com/118350020/216650591-4faf69a6-f190-4804-bee6-457e3f1fd222.png">
+ 
+ so we need to restart the service using the below command
+ 
+ sudo systemctl restart mysqld 
+ 
+ so now lets go back to our webserver
+ 
+ so we are going to run this command now
+ 
+ sudo vi wp-config.php
+ 
+ <img width="1440" alt="Screenshot 2023-02-03 at 17 11 23" src="https://user-images.githubusercontent.com/118350020/216651820-4b4eb924-94f1-47a7-a6d6-67eeebdcb601.png">
+ 
+ <img width="1440" alt="Screenshot 2023-02-03 at 17 11 30" src="https://user-images.githubusercontent.com/118350020/216651846-cc88123c-5a2e-4f78-8b54-a9add77e57b4.png">
+ 
+ so we are going to edit now
+ 
+ 
  
  
