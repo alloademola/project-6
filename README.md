@@ -109,7 +109,8 @@ so we are going to use lsblk utility to view the newly configured partition on e
 <img width="464" alt="Screenshot 2023-01-30 at 09 09 11" src="https://user-images.githubusercontent.com/118350020/215422091-07028a6d-9211-4f82-8f30-4238bade1f39.png">
 
 so we are going to Install lvm2 package using the below command
-sudo yum install lvm2 -y
+
+ sudo yum install lvm2 -y
 
 <img width="1440" alt="Screenshot 2023-01-30 at 09 19 16" src="https://user-images.githubusercontent.com/118350020/215424114-c7c42162-3293-4599-8b07-9913cbbafd95.png">
 
@@ -117,7 +118,8 @@ sudo yum install lvm2 -y
 
 
 to check if it as being instslled, we are going to use this command
-which lvm
+
+ which lvm
 
 <img width="710" alt="Screenshot 2023-01-30 at 09 24 24" src="https://user-images.githubusercontent.com/118350020/215425443-21927827-35c6-4f73-a8e2-ec240f43c7ed.png">
 
@@ -134,7 +136,8 @@ sudo pvcreate /dev/xvdg1
 sudo pvcreate /dev/xvdh1
 
 note i can as well create it once, so i will uuse this command to create it once
-sudo pvcreate /dev/xvdf1 /dev/xvdg1 /dev/xvdh1
+
+ sudo pvcreate /dev/xvdf1 /dev/xvdg1 /dev/xvdh1
 
 <img width="581" alt="Screenshot 2023-01-30 at 09 38 21" src="https://user-images.githubusercontent.com/118350020/215427890-bd8cc1b7-f2a5-47f0-bc72-2911b118f0a4.png">
 
@@ -177,6 +180,7 @@ so we are going to use this commmand below
  
  now we are going to Verify the entire setup, so we are using the below command
  
+ 
  sudo lvs, sudo vgs and sudo pvs 
  
  <img width="657" alt="Screenshot 2023-01-30 at 10 59 44" src="https://user-images.githubusercontent.com/118350020/215573300-ad22de29-2973-4891-ae8b-28441018bae2.png">
@@ -184,21 +188,27 @@ so we are going to use this commmand below
  The next thing to do now is to Use mkfs.ext4 to format the logical volumes with ext4 filesystem
  so we are going to run the command below
  
+ 
  sudo mkfs.ext4 /dev/vg-webdata/apps-lv 
  
+
  <img width="622" alt="Screenshot 2023-01-30 at 20 26 48" src="https://user-images.githubusercontent.com/118350020/215576126-8e241e50-a0e4-47a9-a50d-1f405b1c3019.png">
 
 this for the first one, so we are going to use the below command to create for logs-lv
  
+ 
  sudo mkfs.ext4 /dev/vg-webdata/logs-lv
  
+
  <img width="650" alt="Screenshot 2023-01-30 at 20 31 08" src="https://user-images.githubusercontent.com/118350020/215577187-16489b29-2e1b-411f-a7af-f91e0244d784.png">
 
  15 :  the next step is to Create /var/www/html directory to store website files
 so we are going to use this command
 
+ 
  sudo mkdir -p /var/www/html
  
+
  <img width="610" alt="Screenshot 2023-01-30 at 21 13 53" src="https://user-images.githubusercontent.com/118350020/215585329-802f33a5-d821-45d7-b90d-61e3e0403329.png"> 
 
  
@@ -462,13 +472,20 @@ next step is to install To install PHP and it’s depemdencies
  so we need to run all this command below
  
 sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-sudo yum install yum-utils http://rpms.remirepo.net/enterprise/remi-release-8.rpm
-sudo yum module list php
-sudo yum module reset php
-sudo yum module enable php:remi-7.4
-sudo yum install php php-opcache php-gd php-curl php-mysqlnd
-sudo systemctl start php-fpm
-sudo systemctl enable php-fpm
+
+ sudo yum install yum-utils http://rpms.remirepo.net/enterprise/remi-release-8.rpm
+
+ sudo yum module list php
+
+ sudo yum module reset php
+
+ sudo yum module enable php:remi-7.4
+
+ sudo yum install php php-opcache php-gd php-curl php-mysqlnd
+
+ sudo systemctl start php-fpm
+
+ sudo systemctl enable php-fpm
  
  lets check if the php is active, so we are going to run this command
  
@@ -683,8 +700,47 @@ bind-address=0.0.0.0 as shown in the diagram below
  
  <img width="1440" alt="Screenshot 2023-02-03 at 17 11 30" src="https://user-images.githubusercontent.com/118350020/216651846-cc88123c-5a2e-4f78-8b54-a9add77e57b4.png">
  
- so we are going to edit now
+ 
+ so from the diagram above we need to do some editting as shown in the below digram, we need to change the database name to wordpress, the username as well to anything you like, and also changed the password as well
+ 
+ 
+ <img width="834" alt="Screenshot 2023-02-05 at 01 36 33" src="https://user-images.githubusercontent.com/118350020/216795680-1c460c4e-53d3-42ba-a61a-07dc1e0bccc4.png">
+ 
+ so we just have to restart the httpd with the command below and as shown in the below diagram as well
  
  
  
+ sudo systemctl restart httpd 
  
+ 
+ <img width="837" alt="Screenshot 2023-02-05 at 01 47 58" src="https://user-images.githubusercontent.com/118350020/216795800-fb8fb05f-4507-4b63-96bb-1da450ee8279.png">
+ 
+ 
+ one more thing we have to do is to disabled the defaults page of our Apache , or else, we wont see our wordpress site
+ 
+ so am going to run the command below and as shown in the diagram below as well
+ 
+ 
+ sudo mv /etc/httpd/conf.d/welcome.conf /etc/httpd/conf.d/welcome.conf_backup 
+ 
+ 
+ <img width="845" alt="Screenshot 2023-02-05 at 01 55 49" src="https://user-images.githubusercontent.com/118350020/216796048-ed14ee76-2688-470c-85cc-782e2d155f94.png"> 
+
+ 
+ we also need to Configure SELinux Policies using the below commands 
+
+  sudo chown -R apache:apache /var/www/html/
+  
+ sudo chcon -t httpd_sys_rw_content_t /var/www/html/ -R
+  
+ sudo setsebool -P httpd_can_network_connect=1 
+ 
+ there is still one more camand
+ 
+ sudo setsebool -P httpd_can_network_connect_db 1 
+ 
+ so lets be sure that our webserver can actually talk to our database server, so am going to run the command below, and also
+ input the private IP of our database inside it
+ 
+ 
+ sudo mysql -h 172.31.1.57 -u wordpress -p 
