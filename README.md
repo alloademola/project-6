@@ -784,5 +784,29 @@ bind-address=0.0.0.0 as shown in the diagram below
  
  sudo setsebool -P httpd_can_network_connect_db 1 
  
+ so now let us go back to our web page and reload
+ as show in the. diagram below
+ 
+ <img width="1440" alt="Screenshot 2023-02-07 at 03 15 30" src="https://user-images.githubusercontent.com/118350020/217130755-c8c8a0e4-c7cb-4d00-b7fd-333a43117757.png"> 
+ 
+ as we can see from above diagram, we have our wordpress working
+ 
+ <img width="1440" alt="Screenshot 2023-02-07 at 03 16 42" src="https://user-images.githubusercontent.com/118350020/217130882-bb42e847-80e3-46f6-9bdb-ec3a6c47ea40.png"> 
+ 
+ <img width="1440" alt="Screenshot 2023-02-07 at 03 16 46" src="https://user-images.githubusercontent.com/118350020/217130987-7fe10851-a7e3-42be-8948-71b9d725cd7a.png">
+ 
+ you can just create an account like what youu are seeing from below diagrams
+ 
+ <img width="1440" alt="Screenshot 2023-02-07 at 03 21 09" src="https://user-images.githubusercontent.com/118350020/217132247-44e746d5-610e-424f-b3a2-b2b72e792789.png"> 
+ 
+ <img width="1440" alt="Screenshot 2023-02-07 at 03 21 24" src="https://user-images.githubusercontent.com/118350020/217132296-8d55ab40-0959-44cf-bc4c-b334b7069e65.png">
+ 
+ <img width="1440" alt="Screenshot 2023-02-07 at 03 22 31" src="https://user-images.githubusercontent.com/118350020/217132336-84a8a250-6d2a-4a96-9652-ec9e00346196.png"> 
+ 
+ <img width="1440" alt="Screenshot 2023-02-07 at 03 22 39" src="https://user-images.githubusercontent.com/118350020/217132383-36dfa976-acc6-4541-ac20-99d57993fab6.png">
+
+ <img width="1440" alt="Screenshot 2023-02-07 at 03 16 42" src="https://user-images.githubusercontent.com/118350020/217130882-bb42e847-80e3-46f6-9bdb-ec3a6c47ea40.png"> 
+ 
+ so thats the end of this project 6 implimentation.
  
  
