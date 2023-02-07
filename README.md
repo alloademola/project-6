@@ -238,7 +238,7 @@ so we are going to use this command
  
  so we are to run this command below
  
- sudo rsync -av /var/log/. /home/recovery/logs/
+ sudo rsync -av /var/log/ /home/recovery/logs/
  
 <img width="670" alt="Screenshot 2023-01-30 at 21 42 09" src="https://user-images.githubusercontent.com/118350020/215590548-e73945f9-fe38-45dc-81d4-eb81ec8aebd6.png">
 
@@ -259,7 +259,7 @@ important
  so its very important that we Restore log files back into /var/log directory 
  so we are going to run the below command now
  
- sudo rsync -av /home/recovery/logs/ /var/log
+ sudo rsync -av /home/recovery/logs/log/ /var/log
  
  <img width="648" alt="Screenshot 2023-01-30 at 22 02 28" src="https://user-images.githubusercontent.com/118350020/215594270-d2942dd3-e5f5-4e42-9c64-c5b115ec9bb9.png">
 
@@ -362,7 +362,7 @@ Repeat the same steps as for the Web Server, but instead of apps-lv create db-lv
  
  next, am going to run this command below again.
  
- sudo vgcreate database-vg /dev/xvdh1 /dev/xvdg1 /dev/xvdf1 
+ sudo vgcreate vg-database /dev/xvdh1 /dev/xvdg1 /dev/xvdf1
  
  <img width="979" alt="Screenshot 2023-02-01 at 00 23 19" src="https://user-images.githubusercontent.com/118350020/215906695-8bbaa2b0-bc6a-4f36-b2f4-bbd90e9083da.png">
  
@@ -376,7 +376,7 @@ Repeat the same steps as for the Web Server, but instead of apps-lv create db-lv
  
  we are using the command below and this is the only logical volume we are to created 
  
- sudo lvcreate -n db-lv -L 20G database-vg 
+ sudo lvcreate -n db-lv -L 20G vg-database
  
  <img width="984" alt="Screenshot 2023-02-01 at 00 36 02" src="https://user-images.githubusercontent.com/118350020/215908230-b3e8ae23-40e2-4130-8674-bcf6d788991e.png"> 
  
@@ -391,7 +391,7 @@ So the next step is to create the mount point.
 so we are going to run this command below
  
  sudo mkdir /db 
- sudo mkfs.ext4 /dev/database-vg/db-lv
+ sudo mkfs.ext4 /dev/vg-database/db-lv
  
  <img width="980" alt="Screenshot 2023-02-01 at 00 53 38" src="https://user-images.githubusercontent.com/118350020/215910490-bb9efc03-6fcf-4134-a8a0-f9b53fe84c25.png"> 
  
@@ -403,7 +403,7 @@ so we are going to run this command below
  
  we are going to use the command below
  
- sudo mount /dev/database-vg/db-lv /db 
+ sudo mount /dev/vg-database/db-lv /db 
  
  <img width="972" alt="Screenshot 2023-02-01 at 01 00 12" src="https://user-images.githubusercontent.com/118350020/215911835-8fe140d3-1137-4374-866d-401e1d61400b.png">
  
@@ -467,7 +467,7 @@ sudo yum -y install wget httpd php php-mysqlnd php-fpm php-json
  <img width="1066" alt="Screenshot 2023-02-03 at 13 04 59" src="https://user-images.githubusercontent.com/118350020/216600190-6b2309ed-4254-47e3-bd67-44fcbf536311.png">
  
   
-next step is to install To install PHP and it’s depemdencies 
+next step is to install To install PHP and it’s dependencies 
  
  so we need to run all this command below
  
@@ -498,11 +498,17 @@ sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noa
  we need to run this command 
  
  sudo setsebool -P httpd_execmem 1
-  after this is done ,  we need to restart the Restart Apache using the below cammand
+  
+ after this is done ,  we need to restart the Restart Apache using the below cammand
  But before that, let us check the status 
  
  let us run this command
- sudo systemctl status httpd
+ 
+ sudo systemctl start httpd
+ 
+  sudo systemctl status httpd
+ 
+ 
  
  <img width="1046" alt="Screenshot 2023-02-03 at 14 03 31" src="https://user-images.githubusercontent.com/118350020/216610438-11938f3f-1560-4029-9855-b5c31180ff54.png">
  
@@ -545,13 +551,15 @@ sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noa
  
  so am going to change direction into that wordpress, using this command
  
- cd wordpress
+ cd wordpress/
  
  <img width="1054" alt="Screenshot 2023-02-03 at 14 33 41" src="https://user-images.githubusercontent.com/118350020/216616288-f442e0a0-bebb-4294-8886-b30ed1f9eb34.png"> 
  
  am going to run a command now to copy from one folder to another using the below command
  
  sudo cp -R wp-config-sample.php wp-config.php
+ 
+ cat wp-config.php
  
  <img width="999" alt="Screenshot 2023-02-03 at 14 46 23" src="https://user-images.githubusercontent.com/118350020/216618833-cd7f37e4-073c-48ab-9d44-67868c8a9bd5.png">
  
@@ -568,11 +576,21 @@ sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noa
  so i will run this command below to copy the content from the wordpress
  
 sudo cp -R wordpress/ /var/www/html/ 
-cd /var/www/html/ 
+cd /var/www/html
+ 
+ sudo rm -rf wordpress/
+ sudo rm -rf lost+found/ 
+ 
  
  <img width="978" alt="Screenshot 2023-02-03 at 15 02 42" src="https://user-images.githubusercontent.com/118350020/216623079-53537e51-7eb6-413d-8225-cd6b220599a3.png"> 
  
  cd ../..
+ 
+ cd 
+ 
+ ls
+ 
+ 
  
  <img width="995" alt="Screenshot 2023-02-03 at 15 12 06" src="https://user-images.githubusercontent.com/118350020/216624998-3ac5d503-3648-43c0-bc3a-303ba4e11487.png"> 
  
@@ -582,6 +600,8 @@ cd /var/www/html/
  <img width="995" alt="Screenshot 2023-02-03 at 15 12 06" src="https://user-images.githubusercontent.com/118350020/216625870-674f9e7a-6df0-439d-8f4d-9d4d506aa4e8.png">
  
  sudo cp -R wordpress/.  /var/www/html/
+ 
+ 
  to see if it works, i will run the below command as well
  
  sudo ls -l /var/www/html
@@ -592,6 +612,9 @@ cd /var/www/html/
  
 so lets change directory 
  cd /var/www/html
+ ls
+ 
+ 
  
  <img width="998" alt="Screenshot 2023-02-03 at 15 36 14" src="https://user-images.githubusercontent.com/118350020/216630232-41b90eda-536b-4e07-912e-1704c480e234.png">
  
@@ -650,7 +673,9 @@ from the Diagram above, we are just going to say n
  
  <img width="999" alt="Screenshot 2023-02-03 at 16 16 28" src="https://user-images.githubusercontent.com/118350020/216639488-e54e7687-0b2c-463b-ad3a-8a608755a80d.png">
  
- let us run this command sudo mysql -u root -p
+ let us run this command 
+ 
+ sudo mysql -u root -p
  
  <img width="998" alt="Screenshot 2023-02-03 at 16 19 30" src="https://user-images.githubusercontent.com/118350020/216640176-e5ba56f4-5300-4306-a727-bed510a92383.png">
  
@@ -694,7 +719,6 @@ bind-address=0.0.0.0 as shown in the diagram below
  
  so we are going to run this command now
  
- sudo vi wp-config.php
  
  <img width="1440" alt="Screenshot 2023-02-03 at 17 11 23" src="https://user-images.githubusercontent.com/118350020/216651820-4b4eb924-94f1-47a7-a6d6-67eeebdcb601.png">
  
@@ -726,6 +750,27 @@ bind-address=0.0.0.0 as shown in the diagram below
  
  <img width="845" alt="Screenshot 2023-02-05 at 01 55 49" src="https://user-images.githubusercontent.com/118350020/216796048-ed14ee76-2688-470c-85cc-782e2d155f94.png"> 
 
+ so now,  lest be sure that our websever can actually talk with my database server,
+ 
+ so am going to run this command below
+ 
+ sudo -h <DB-Server-Private-IP-address> -u wordpress -p
+ 
+ as shown in the diagram below
+ 
+ 
+ <img width="776" alt="Screenshot 2023-02-07 at 02 17 39" src="https://user-images.githubusercontent.com/118350020/217123447-a9871bc0-1e45-4769-a887-a3253438b5d7.png">
+ 
+ so i will just type
+ 
+ show databases; 
+ 
+ <img width="780" alt="Screenshot 2023-02-07 at 02 20 00" src="https://user-images.githubusercontent.com/118350020/217123738-4846f4e9-1b06-41ad-846e-fea9daef8a4e.png">
+ 
+ from the diagram above, we can see the databases; we created
+ so this means that, our webserver and database are communicating properly.
+ 
+ 
  
  we also need to Configure SELinux Policies using the below commands 
 
@@ -735,12 +780,9 @@ bind-address=0.0.0.0 as shown in the diagram below
   
  sudo setsebool -P httpd_can_network_connect=1 
  
- there is still one more camand
+ there is still one more cammand
  
  sudo setsebool -P httpd_can_network_connect_db 1 
  
- so lets be sure that our webserver can actually talk to our database server, so am going to run the command below, and also
- input the private IP of our database inside it
  
  
- sudo mysql -h 172.31.1.57 -u wordpress -p 
